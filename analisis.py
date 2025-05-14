@@ -3,15 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import io
+
 
 class DataAnalyzer:
     def __init__(self, data):
         self.df=data
+    
     def summary(self):
-        print(self.df.info())
-        print(self.df.describe())
+        buffer = io.StringIO()
+        self.df.info(buf= buffer)
+        salida = buffer.getvalue() #buffer es espacio en memorio donde se guarda algo detrás de otro.
+        salida_describe = self.df.describe().to_string()
+        salida += "\n\n" + salida_describe #esos \n son equivalentes a dar dos enter
+        return salida
+    
     def missing_values(self):
         return self.df.isnull()
+    
     def imprimir(self):
         print("Hola")
 
@@ -32,6 +41,6 @@ class DataAnalyzer:
             plt.figure()
             sns.countplot(data=self.df, x= column, order = self.df[column].value_counts().index)
             plt.xticks(rotation=45)
-            plt.show()
+            plt.show(block=False)
         else:
             print("La columna no es categórica o está mal escrita")
